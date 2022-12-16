@@ -19,27 +19,12 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   GoogleMapController mapController;
   Future<List<GeoData>> _future;
+  Map<String, Marker> _markers = {};
   //-----------------//
   Map<MarkerId, Marker> markers = <MarkerId, Marker>{};
-  LatLng _center = LatLng(18.5554521, 73.9410411);
+  LatLng currentLocation = LatLng(18.5554521, 73.9410411);
   void _onMapCreated(GoogleMapController controller) {
     mapController = controller;
-
-    final marker = Marker(
-      markerId:
-          MarkerId("Choudhari Wasti, Kharadi, Pune, Maharashtra 411014,India"),
-      position: LatLng(9.669111, 80.014007),
-      // icon: BitmapDescriptor.,
-      infoWindow: InfoWindow(
-        title: 'title',
-        snippet: 'address',
-      ),
-    );
-
-    setState(() {
-      markers[MarkerId(
-          "Choudhari Wasti, Kharadi, Pune, Maharashtra 411014,India")] = marker;
-    });
   }
 
 //----------------//
@@ -64,10 +49,14 @@ class _HomeScreenState extends State<HomeScreen> {
           if (snapshot.hasData) {
             return Scaffold(
               body: GoogleMap(
-                  onMapCreated: _onMapCreated,
+                  onMapCreated: (controller) {
+                    mapController = controller;
+                    addMarker("test", currentLocation);
+                  },
+                  markers: _markers.values.toSet(),
                   trafficEnabled: true,
                   initialCameraPosition:
-                      CameraPosition(target: _center, zoom: 100)),
+                      CameraPosition(target: currentLocation, zoom: 14)),
             );
           } else {
             return Scaffold(
@@ -77,5 +66,12 @@ class _HomeScreenState extends State<HomeScreen> {
             );
           }
         });
+  }
+
+  addMarker(String markerID, LatLng location) {
+    var marker = Marker(markerId: MarkerId(markerID), position: location);
+
+    _markers[markerID] = marker;
+    setState(() {});
   }
 }
