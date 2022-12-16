@@ -8,26 +8,29 @@ import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:test_app/screens/homeScreen.dart';
 import 'package:test_app/services/data_model.dart';
+import 'package:test_app/services/geoData_model.dart';
 
 class Api_Manager {
-  Future<List<LoginData>> getData() async {
+  Future<List<GeoData>> getData() async {
     final prefs = await SharedPreferences.getInstance();
-    final token = prefs.getString("session_token");
+    var token = prefs.getString("session_token");
+    print(token);
     var client = http.Client();
-    var url = Uri.parse(
-        "https://api.terrablender.com/terraprocess/api/v2/sys/data/lattest_excavation?geo=true");
-    var response =
-        await client.get(url, headers: {"Authentication": "Bearer $token"});
+    var response = await client.get(
+        Uri.parse(
+            "https://api.terrablender.com/terraprocess/api/v2/sys/data/lattest_excavation?geo="),
+        headers: {"Authentication": "Bearer $token"});
 
     if (response.statusCode == 200) {
-      List JsonResponse = json.decode(response.body);
-      final prefs = await SharedPreferences.getInstance();
-      prefs.setString("geojson", response.body);
-      print(response.body);
-      return JsonResponse.map((e) => LoginData.fromJson(e)).toList();
+      var jsonData = response.body;
+      var data = json.decode(jsonData);
+
+      print(data);
+      return geoDataFromJson(jsonData);
     }
-    print(response.body);
   }
+
+  //------------LoginData-------------//
 
   Future<http.Response> loginPost(
       String username, String passcode, BuildContext context) async {
