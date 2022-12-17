@@ -11,7 +11,7 @@ import 'package:test_app/services/data_model.dart';
 import 'package:test_app/services/geoData_model.dart';
 
 class Api_Manager {
-  Future<List<GeoData>> getData() async {
+  Future<Map<String, dynamic>> getData() async {
     final prefs = await SharedPreferences.getInstance();
     var token = prefs.getString("session_token");
     print(token);
@@ -23,10 +23,16 @@ class Api_Manager {
 
     if (response.statusCode == 200) {
       var jsonData = response.body;
-      var data = json.decode(jsonData);
+      // var data = jsonDecode(jsonData);
 
-      print(data);
-      return geoDataFromJson(jsonData);
+      // print(data);
+      String jsonsDataString = response.body;
+      // toString of Response's body is assigned to jsonDataString
+      var data = jsonDecode(jsonsDataString.toString());
+
+      print("DATA :  n/");
+      print(data[2]['geometry']);
+      return data;
     }
   }
 
@@ -49,7 +55,7 @@ class Api_Manager {
       Map abc = jsonDecode(response.body);
       if (response.statusCode == 200) {
         final d = await prefs.setString("session_token", abc["session_token"]);
-        print(d);
+
         Navigator.pushReplacement(
             context, MaterialPageRoute(builder: (context) => HomeScreen()));
       }

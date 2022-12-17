@@ -32,7 +32,7 @@ class _HomeScreenState extends State<HomeScreen> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    _future = Api_Manager().getData();
+    Api_Manager().getData();
   }
 
   //------------------------//
@@ -45,7 +45,7 @@ class _HomeScreenState extends State<HomeScreen> {
         future: _future,
         builder: (context, snapshot) {
           var coordinates = snapshot.data;
-          print(coordinates);
+
           if (snapshot.hasData) {
             return Scaffold(
               body: GoogleMap(
